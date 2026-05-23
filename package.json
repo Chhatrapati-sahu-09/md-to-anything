@@ -1,12 +1,23 @@
 {
   "name": "md-to-anything",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "version": "0.1.0",
+  "description": "Convert Markdown to PDF, DOCX, or HTML using templates",
+  "type": "module",
+  "bin": {
+    "md-to": "./dist/cli.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "scripts": {
+    "dev": "tsx src/cli.ts",
+    "build": "tsc",
+    "start": "node dist/cli.js"
+  },
+  "keywords": [
+    "markdown",
+    "pdf",
+    "docx",
+    "html",
+    "cli",
+    "converter"
+  ],
+  "license": "MIT"
 }
