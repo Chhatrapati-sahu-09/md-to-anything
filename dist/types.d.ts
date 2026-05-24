@@ -1,0 +1,21 @@
+export interface Frontmatter {
+    title?: string;
+    author?: string;
+    date?: string;
+    template?: string;
+    format?: "pdf" | "docx" | "html";
+    output?: string;
+    margin?: string;
+}
+export interface ParsedDocument {
+    frontmatter: Frontmatter;
+    content: string;
+    html: string;
+    filePath: string;
+}
+export interface ConvertOptions {
+    format: "pdf" | "docx" | "html";
+    template?: string;
+    output?: string;
+    verbose?: boolean;
+}
