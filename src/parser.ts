@@ -8,7 +8,7 @@ import type { ParsedDocument, Frontmatter } from "./types.js";
 const FrontmatterSchema = z.object({
   title: z.string().optional(),
   author: z.string().optional(),
-  date: z.string().optional(),
+  date: z.union([z.string(), z.date()]).optional(),
   template: z.string().optional(),
   format: z.enum(["pdf", "docx", "html"]).optional(),
   output: z.string().optional(),
@@ -40,7 +40,13 @@ export function parseMarkdownFile(filePath: string): ParsedDocument {
     throw new Error(`Invalid frontmatter: ${result.error.message}`);
   }
 
-  const frontmatter: Frontmatter = result.data;
+  const frontmatter: Frontmatter = {
+    ...result.data,
+    date:
+      result.data.date instanceof Date
+        ? result.data.date.toISOString().slice(0, 10)
+        : result.data.date,
+  };
   const html = md.render(content);
 
   return {
