@@ -1,6 +1,6 @@
 import MarkdownIt from "markdown-it";
 import matter from "gray-matter";
-import { readFileSync, existsSync } from "fs";
+import { readFileSync, existsSync, statSync } from "fs";
 import { resolve, extname } from "path";
 import { z } from "zod";
 import type { ParsedDocument, Frontmatter } from "./types.js";
@@ -26,6 +26,11 @@ export function parseMarkdownFile(filePath: string): ParsedDocument {
 
   if (!existsSync(absolutePath)) {
     throw new Error(`File not found: ${absolutePath}`);
+  }
+
+  const stat = statSync(absolutePath);
+  if (stat.isDirectory()) {
+    throw new Error(`Expected a file but got a directory: ${absolutePath}`);
   }
 
   if (extname(absolutePath) !== ".md") {

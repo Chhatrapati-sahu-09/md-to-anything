@@ -1,12 +1,12 @@
 import MarkdownIt from "markdown-it";
 import matter from "gray-matter";
-import { readFileSync, existsSync } from "fs";
+import { readFileSync, existsSync, statSync } from "fs";
 import { resolve, extname } from "path";
 import { z } from "zod";
 const FrontmatterSchema = z.object({
     title: z.string().optional(),
     author: z.string().optional(),
-    date: z.string().optional(),
+    date: z.union([z.string(), z.date()]).optional(),
     template: z.string().optional(),
     format: z.enum(["pdf", "docx", "html"]).optional(),
     output: z.string().optional(),
@@ -22,6 +22,10 @@ export function parseMarkdownFile(filePath) {
     if (!existsSync(absolutePath)) {
         throw new Error(`File not found: ${absolutePath}`);
     }
+    const stat = statSync(absolutePath);
+    if (stat.isDirectory()) {
+        throw new Error(`Expected a file but got a directory: ${absolutePath}`);
+    }
     if (extname(absolutePath) !== ".md") {
         throw new Error(`File must be a .md file: ${absolutePath}`);
     }
@@ -31,7 +35,12 @@ export function parseMarkdownFile(filePath) {
     if (!result.success) {
         throw new Error(`Invalid frontmatter: ${result.error.message}`);
     }
-    const frontmatter = result.data;
+    const frontmatter = {
+        ...result.data,
+        date: result.data.date instanceof Date
+            ? result.data.date.toISOString().slice(0, 10)
+            : result.data.date,
+    };
     const html = md.render(content);
     return {
         frontmatter,
