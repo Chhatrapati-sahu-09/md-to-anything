@@ -3,14 +3,9 @@ import { createRequire } from "module";
 import { parseMarkdownFile } from "./parser.js";
 import { convert } from "./converters/index.js";
 import { loadConfig } from "./config.js";
-const require = createRequire(import.meta.url);
-const pkg = require("../package.json");
-const program = new Command();
-program
-    .name("md-to")
-    .description("Convert Markdown files to PDF, DOCX, or HTML");
 import { batchConvert } from "./batch.js";
 import { log, printBatchSummary, printBatchProgress } from "./logger.js";
+import { startPreview } from "./preview.js";
 const require = createRequire(import.meta.url);
 const pkg = require("../package.json");
 const program = new Command();
@@ -25,6 +20,8 @@ program
     .option("-t, --template <template>", "Template name")
     .option("-o, --output <path>", "Output file path")
     .option("-v, --verbose", "Show detailed logs")
+    .option("-w, --watch", "Start live preview with hot reload")
+    .option("-p, --port <number>", "Port for live preview", "3000")
     .action(async (file, options) => {
     const config = loadConfig();
     const format = options.format ?? config.format ?? "html";
@@ -34,6 +31,11 @@ program
             log.dim(`Parsing:  ${file}`);
             log.dim(`Format:   ${format}`);
             log.dim(`Template: ${template}`);
+        }
+        if (options.watch) {
+            const port = parseInt(options.port, 10) || 3000;
+            await startPreview(file, template, port);
+            return;
         }
         log.info("Parsing markdown...");
         const doc = parseMarkdownFile(file);
@@ -49,7 +51,7 @@ program
     }
     catch (err) {
         log.blank();
-        log.error(err.message);
+        log.error(err.message ?? String(err));
         process.exit(1);
     }
 });
@@ -77,7 +79,7 @@ program
     }
     catch (err) {
         log.blank();
-        log.error(err.message);
+        log.error(err.message ?? String(err));
         process.exit(1);
     }
 });
@@ -102,7 +104,7 @@ program
         console.log(`  Lines:    ${lines}`);
     }
     catch (err) {
-        log.error(err.message);
+        log.error(err.message ?? String(err));
         process.exit(1);
     }
 });

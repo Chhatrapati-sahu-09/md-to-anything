@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ title or "Report" }}</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 16px;
+        line-height: 1.8;
+        color: #1a1a1a;
+        background: #fff;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 4rem 2rem;
+      }
+
+      .cover {
+        text-align: center;
+        padding: 4rem 0 5rem;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 4rem;
+      }
+
+      .cover h1 {
+        font-size: 2.4rem;
+        font-weight: 700;
+        line-height: 1.2;
+        color: #111;
+        margin: 0 0 1rem;
+        letter-spacing: -0.5px;
+      }
+
+      .cover-meta {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 0.9rem;
+        color: #666;
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+        margin: 3rem 0 1rem;
+        color: #111;
+      }
+      h2 {
+        font-size: 1.3rem;
+        margin: 2.5rem 0 0.75rem;
+        color: #111;
+      }
+      h3 {
+        font-size: 1.1rem;
+        margin: 2rem 0 0.5rem;
+        color: #333;
+      }
+
+      p {
+        margin: 0 0 1.25rem;
+      }
+
+      blockquote {
+        margin: 2rem 0;
+        padding: 1rem 1.5rem;
+        border-left: 3px solid #ddd;
+        color: #555;
+        font-style: italic;
+      }
+
+      code {
+        font-family: "SF Mono", "Fira Code", monospace;
+        font-size: 0.85em;
+        background: #f6f6f6;
+        padding: 0.15em 0.4em;
+        border-radius: 3px;
+      }
+
+      pre {
+        background: #f6f6f6;
+        padding: 1.25rem;
+        border-radius: 6px;
+        overflow-x: auto;
+        margin: 1.5rem 0;
+      }
+
+      pre code {
+        background: none;
+        padding: 0;
+        font-size: 0.875em;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 2rem 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 0.9em;
+      }
+
+      th {
+        text-align: left;
+        padding: 0.6rem 1rem;
+        border-bottom: 2px solid #111;
+        font-weight: 600;
+      }
+
+      td {
+        padding: 0.65rem 1rem;
+        border-bottom: 1px solid #eee;
+      }
+
+      ul,
+      ol {
+        padding-left: 1.5rem;
+        margin: 0 0 1.25rem;
+      }
+      li {
+        margin-bottom: 0.4rem;
+      }
+
+      hr {
+        border: none;
+        border-top: 1px solid #ddd;
+        margin: 3rem 0;
+      }
+
+      @media print {
+        body {
+          padding: 0;
+          max-width: 100%;
+        }
+        .cover {
+          padding: 3rem 0 4rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    {% if title %}
+    <div class="cover">
+      <h1>{{ title }}</h1>
+      <div class="cover-meta">
+        {% if author %}<span>{{ author }}</span>{% endif %} {% if date %}<span
+          >{{ date }}</span
+        >{% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    <main>{{ content | safe }}</main>
+  </body>
+</html>
