@@ -1,6 +1,5 @@
 import { Command } from "commander";
 import { createRequire } from "module";
-import pc from "picocolors";
 import { parseMarkdownFile } from "./parser.js";
 import { convert } from "./converters/index.js";
 import { loadConfig } from "./config.js";
@@ -9,12 +8,21 @@ const pkg = require("../package.json");
 const program = new Command();
 program
     .name("md-to")
+    .description("Convert Markdown files to PDF, DOCX, or HTML");
+import { batchConvert } from "./batch.js";
+import { log, printBatchSummary, printBatchProgress } from "./logger.js";
+const require = createRequire(import.meta.url);
+const pkg = require("../package.json");
+const program = new Command();
+program
+    .name("md-to")
     .description("Convert Markdown files to PDF, DOCX, or HTML")
     .version(pkg.version);
+// ─── Single file convert ───────────────────────────────────────────────────
 program
     .argument("<file>", "Markdown file to convert")
     .option("-f, --format <format>", "Output format: pdf, docx, html")
-    .option("-t, --template <template>", "Template name to use")
+    .option("-t, --template <template>", "Template name")
     .option("-o, --output <path>", "Output file path")
     .option("-v, --verbose", "Show detailed logs")
     .action(async (file, options) => {
@@ -23,26 +31,57 @@ program
     const template = options.template ?? config.template ?? "default";
     try {
         if (options.verbose) {
-            console.log(pc.dim(`Parsing:  ${file}`));
-            console.log(pc.dim(`Format:   ${format}`));
-            console.log(pc.dim(`Template: ${template}`));
+            log.dim(`Parsing:  ${file}`);
+            log.dim(`Format:   ${format}`);
+            log.dim(`Template: ${template}`);
         }
-        console.log(pc.cyan("⠿ Parsing markdown..."));
+        log.info("Parsing markdown...");
         const doc = parseMarkdownFile(file);
-        console.log(pc.cyan(`⠿ Converting to ${format.toUpperCase()}...`));
+        log.info(`Converting to ${format.toUpperCase()}...`);
         const outputPath = await convert(doc, {
             format,
             template,
             output: options.output,
         });
-        console.log(pc.green(`\n✓ Done!`));
-        console.log(pc.dim(`  Output: ${outputPath}`));
+        log.blank();
+        log.success("Done!");
+        log.dim(`  Output: ${outputPath}`);
     }
     catch (err) {
-        console.error(pc.red("\n✗ Error: ") + err.message);
+        log.blank();
+        log.error(err.message);
         process.exit(1);
     }
 });
+// ─── Batch convert ─────────────────────────────────────────────────────────
+program
+    .command("batch <pattern>")
+    .description('Convert multiple files — e.g. batch "docs/*.md" --format pdf')
+    .option("-f, --format <format>", "Output format: pdf, docx, html")
+    .option("-t, --template <template>", "Template name")
+    .option("-d, --out-dir <dir>", "Output directory for all converted files")
+    .option("-v, --verbose", "Show detailed logs")
+    .action(async (pattern, options) => {
+    const config = loadConfig();
+    const format = options.format ?? config.format ?? "html";
+    const template = options.template ?? config.template ?? "default";
+    try {
+        log.info(`Scanning: ${pattern}`);
+        log.info(`Format:   ${format.toUpperCase()}`);
+        log.blank();
+        const results = await batchConvert(pattern, { format, template, outputDir: options.outDir }, printBatchProgress);
+        printBatchSummary(results);
+        const anyFailed = results.some((r) => !r.success);
+        if (anyFailed)
+            process.exit(1);
+    }
+    catch (err) {
+        log.blank();
+        log.error(err.message);
+        process.exit(1);
+    }
+});
+// ─── Info command ──────────────────────────────────────────────────────────
 program
     .command("info <file>")
     .description("Inspect frontmatter and stats of a markdown file")
@@ -51,18 +90,19 @@ program
         const doc = parseMarkdownFile(file);
         const wordCount = doc.content.split(/\s+/).filter(Boolean).length;
         const lines = doc.content.split("\n").length;
-        console.log(pc.bold("\n--- File Info ---"));
-        console.log(pc.cyan("Path:     ") + doc.filePath);
-        console.log(pc.cyan("Title:    ") + (doc.frontmatter.title ?? pc.dim("(none)")));
-        console.log(pc.cyan("Author:   ") + (doc.frontmatter.author ?? pc.dim("(none)")));
-        console.log(pc.cyan("Date:     ") + (doc.frontmatter.date ?? pc.dim("(none)")));
-        console.log(pc.cyan("Format:   ") + (doc.frontmatter.format ?? pc.dim("(none)")));
-        console.log(pc.cyan("Template: ") + (doc.frontmatter.template ?? pc.dim("(none)")));
-        console.log(pc.cyan("Words:    ") + wordCount);
-        console.log(pc.cyan("Lines:    ") + lines);
+        log.blank();
+        log.bold("--- File Info ---");
+        console.log(`  Path:     ${doc.filePath}`);
+        console.log(`  Title:    ${doc.frontmatter.title ?? "(none)"}`);
+        console.log(`  Author:   ${doc.frontmatter.author ?? "(none)"}`);
+        console.log(`  Date:     ${doc.frontmatter.date ?? "(none)"}`);
+        console.log(`  Format:   ${doc.frontmatter.format ?? "(none)"}`);
+        console.log(`  Template: ${doc.frontmatter.template ?? "(none)"}`);
+        console.log(`  Words:    ${wordCount}`);
+        console.log(`  Lines:    ${lines}`);
     }
     catch (err) {
-        console.error(pc.red("✗ Error: ") + err.message);
+        log.error(err.message);
         process.exit(1);
     }
 });

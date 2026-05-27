@@ -1,5 +1,6 @@
 import { convertToHtml } from "./html.js";
 import { convertToPdf } from "./pdf.js";
+import { convertToDocx } from "./docx.js";
 import type { ParsedDocument, ConvertOptions } from "../types.js";
 
 export async function convert(
@@ -14,8 +15,10 @@ export async function convert(
     case "pdf":
       return await convertToPdf(doc, options);
     case "docx":
-      throw new Error("DOCX support coming in Day 3.");
+      return await convertToDocx(doc, options);
     default:
-      throw new Error(`Unknown format: ${format}`);
+      throw new Error(
+        `Unknown format "${format}". Valid options: html, pdf, docx`,
+      );
   }
 }

@@ -6,6 +6,7 @@ export interface Frontmatter {
     format?: "pdf" | "docx" | "html";
     output?: string;
     margin?: string;
+    lang?: string;
 }
 export interface ParsedDocument {
     frontmatter: Frontmatter;
@@ -18,4 +19,12 @@ export interface ConvertOptions {
     template?: string;
     output?: string;
     verbose?: boolean;
+    outputDir?: string;
+}
+export interface BatchResult {
+    file: string;
+    output?: string;
+    success: boolean;
+    error?: string;
+    durationMs: number;
 }
