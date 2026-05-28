@@ -23,6 +23,9 @@ It supports:
 - Batch conversion
 - Clean CLI workflow
 
+See the full project layout in [FILE_STRUCTURE.md](FILE_STRUCTURE.md).
+See the development plan in [WORKING_PLAN.md](WORKING_PLAN.md).
+
 ---
 
 # Architecture Diagram
