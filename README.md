@@ -1,36 +1,70 @@
-# md-to-anything
+# <div align="center">
 
-Convert Markdown files to clean PDF, DOCX, or HTML using customizable templates.
+<img src="https://capsule-render.vercel.app/api?type=waving&height=260&text=MD%20TO%20ANYTHING&fontAlign=50&fontAlignY=40&color=0:0f172a,50:1e293b,100:334155&fontColor=ffffff&fontSize=55&animation=fadeIn&desc=Convert%20Markdown%20to%20PDF%20DOCX%20and%20HTML&descAlignY=65&descSize=18" />
 
-```bash
-npx md-to-anything report.md --format pdf
+</div>
+
+<p align="center">
+  Convert Markdown files into clean and professional PDF, DOCX, and HTML documents with customizable templates, live preview, and batch conversion support.
+</p>
+
+---
+
+# Overview
+
+`md-to-anything` is a modern CLI utility for converting Markdown documents into multiple professional formats such as PDF, DOCX, and HTML.
+
+It supports:
+
+- Multiple export formats
+- Custom templates
+- Frontmatter configuration
+- Live preview with hot reload
+- Batch conversion
+- Clean CLI workflow
+
+---
+
+# Architecture Diagram
+
+```text
+                ┌───────────────────────┐
+                │   Markdown File (.md) │
+                └──────────┬────────────┘
+                           │
+                           ▼
+                ┌───────────────────────┐
+                │  Frontmatter Parser   │
+                └──────────┬────────────┘
+                           │
+                           ▼
+                ┌───────────────────────┐
+                │ Markdown Transformer  │
+                └──────────┬────────────┘
+                           │
+        ┌──────────────────┼──────────────────┐
+        │                  │                  │
+        ▼                  ▼                  ▼
+┌──────────────┐   ┌──────────────┐   ┌──────────────┐
+│ PDF Renderer │   │ DOCX Engine  │   │ HTML Engine  │
+│ Puppeteer    │   │ Pandoc       │   │ Template Sys │
+└──────┬───────┘   └──────┬───────┘   └──────┬───────┘
+       │                  │                  │
+       ▼                  ▼                  ▼
+   report.pdf         report.docx        report.html
 ```
 
 ---
 
-## Install
+# Features
 
-```bash
-npm install -g md-to-anything
-```
+## Document Conversion
 
-Or run without installing:
+Convert Markdown files into:
 
-```bash
-npx md-to-anything [options]
-```
-
-### Requirements
-
-- Node.js 18+
-- [Pandoc](https://pandoc.org/installing.html) for DOCX output
-- Chromium, installed automatically by Puppeteer for PDF output
-
----
-
-## Usage
-
-### Convert a single file
+- PDF
+- DOCX
+- HTML
 
 ```bash
 md-to report.md --format pdf
@@ -38,51 +72,62 @@ md-to report.md --format docx
 md-to report.md --format html
 ```
 
-### Specify a template
+---
+
+## Custom Templates
+
+Built-in templates:
+
+| Template | Usage                 |
+| -------- | --------------------- |
+| default  | General documents     |
+| resume   | CV and Resume layouts |
+| invoice  | Invoice generation    |
+| report   | Formal reports        |
+
+Example:
 
 ```bash
 md-to cv.md --template resume --format pdf
-md-to bill.md --template invoice --format pdf
-md-to paper.md --template report --format pdf
-```
-
-### Custom output path
-
-```bash
-md-to report.md --format pdf --output ~/Desktop/report.pdf
-```
-
-### Live preview with hot reload
-
-```bash
-md-to report.md --watch
-md-to report.md --watch --port 4000
-```
-
-### Batch convert multiple files
-
-```bash
-md-to batch "docs/*.md" --format pdf
-md-to batch "posts/**/*.md" --format html --out-dir output/
-```
-
-### Inspect a file
-
-```bash
-md-to info report.md
-```
-
-### List available templates
-
-```bash
-md-to templates
 ```
 
 ---
 
-## Frontmatter config
+## Live Preview Mode
 
-Set options directly in your Markdown file using YAML frontmatter:
+Watch files and auto-refresh on changes.
+
+```bash
+md-to report.md --watch
+```
+
+Custom port:
+
+```bash
+md-to report.md --watch --port 4000
+```
+
+---
+
+## Batch Conversion
+
+Convert multiple Markdown files together.
+
+```bash
+md-to batch "docs/*.md" --format pdf
+```
+
+Recursive conversion:
+
+```bash
+md-to batch "posts/**/*.md" --format html --out-dir output/
+```
+
+---
+
+## Frontmatter Support
+
+Supports YAML frontmatter configuration directly inside Markdown files.
 
 ```markdown
 ---
@@ -94,52 +139,133 @@ format: pdf
 margin: 2.5cm
 ---
 
-# Your content here
+# Content
 ```
 
-All frontmatter fields are optional. CLI flags always override frontmatter.
-
-| Field      | Type                      | Description                        |
-| ---------- | ------------------------- | ---------------------------------- |
-| `title`    | string                    | Document title                     |
-| `author`   | string                    | Author name                        |
-| `date`     | string                    | Date shown in header               |
-| `template` | string                    | Template name (default: `default`) |
-| `format`   | `pdf` \| `docx` \| `html` | Output format                      |
-| `output`   | string                    | Output file path                   |
-| `margin`   | string                    | PDF margin, for example `2cm`      |
+CLI arguments always override frontmatter values.
 
 ---
 
-## Templates
+# Installation
 
-| Name      | Best for             |
-| --------- | -------------------- |
-| `default` | General documents    |
-| `resume`  | CVs and resumes      |
-| `invoice` | Billing and invoices |
-| `report`  | Formal reports       |
-
-### Use your own template
-
-Create a `.html` file in a `templates/` folder in your project root.
-It receives these variables:
-
-```html
-{{ title }} {{ author }} {{ date }} {{ content | safe }}
-```
-
-Then use it:
+## Global Installation
 
 ```bash
-md-to report.md --template my-custom-template
+npm install -g md-to-anything
 ```
 
 ---
 
-## Config file
+## Using NPX
 
-Create `md-to.config.json` at your project root to set default options:
+```bash
+npx md-to-anything report.md --format pdf
+```
+
+---
+
+# Requirements
+
+| Dependency         | Purpose         |
+| ------------------ | --------------- |
+| Node.js 18+        | Runtime         |
+| Pandoc             | DOCX generation |
+| Puppeteer Chromium | PDF rendering   |
+
+Install Pandoc:
+
+```bash
+https://pandoc.org/installing.html
+```
+
+---
+
+# Usage
+
+## Convert Single File
+
+```bash
+md-to report.md --format pdf
+```
+
+---
+
+## Specify Output Path
+
+```bash
+md-to report.md --format pdf --output ~/Desktop/report.pdf
+```
+
+---
+
+## List Templates
+
+```bash
+md-to templates
+```
+
+---
+
+## Inspect File Metadata
+
+```bash
+md-to info report.md
+```
+
+---
+
+# Frontmatter Configuration
+
+| Field    | Type          | Description    |
+| -------- | ------------- | -------------- |
+| title    | string        | Document title |
+| author   | string        | Author name    |
+| date     | string        | Header date    |
+| template | string        | Template name  |
+| format   | pdf/docx/html | Export format  |
+| output   | string        | Output path    |
+| margin   | string        | PDF margin     |
+
+---
+
+# Custom Templates
+
+Create custom templates inside:
+
+```text
+templates/
+```
+
+Example:
+
+```html
+<html>
+  <head>
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    {{ content | safe }}
+  </body>
+</html>
+```
+
+Use custom template:
+
+```bash
+md-to report.md --template my-template
+```
+
+---
+
+# Configuration File
+
+Create:
+
+```json
+md-to.config.json
+```
+
+Example:
 
 ```json
 {
@@ -148,38 +274,79 @@ Create `md-to.config.json` at your project root to set default options:
 }
 ```
 
-CLI flags always override the config file.
+---
+
+# CLI Options
+
+| Option         | Description   |
+| -------------- | ------------- |
+| -f, --format   | Output format |
+| -t, --template | Template name |
+| -o, --output   | Output path   |
+| -w, --watch    | Live preview  |
+| -p, --port     | Preview port  |
+| -v, --verbose  | Detailed logs |
+| -V, --version  | Version       |
+| -h, --help     | Help menu     |
 
 ---
 
-## All CLI options
+# Commands
 
-Arguments:
-file Markdown file to convert
-
-Options:
--f, --format <format> Output format: pdf, docx, html
--t, --template <name> Template name (default: "default")
--o, --output <path> Output file path
--w, --watch Start live preview with hot reload
--p, --port <number> Port for live preview (default: 3000)
--v, --verbose Show detailed logs
--V, --version Show version number
--h, --help Show help
-
-Commands:
-batch <pattern> Convert multiple files using a glob pattern
-info <file> Show frontmatter and word count
-templates List available templates
+| Command   | Description            |
+| --------- | ---------------------- |
+| batch     | Convert multiple files |
+| info      | Show metadata          |
+| templates | List templates         |
 
 ---
 
-## Contributing
+# Tech Stack
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md).
+<p align="left">
+
+<img src="https://skillicons.dev/icons?i=nodejs,npm,html,css,js" />
+
+</p>
 
 ---
 
-## License
+# Example Workflow
 
-MIT
+```text
+Write Markdown
+       │
+       ▼
+Run md-to-anything CLI
+       │
+       ▼
+Choose Template + Format
+       │
+       ▼
+Generate Output
+       │
+       ├── PDF
+       ├── DOCX
+       └── HTML
+```
+
+---
+
+# Contributing
+
+Contributions are welcome.
+
+Steps:
+
+```bash
+git clone <repo>
+cd md-to-anything
+npm install
+npm run dev
+```
+
+---
+
+# License
+
+MIT License
