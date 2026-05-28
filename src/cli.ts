@@ -1,5 +1,7 @@
 import { Command } from "commander";
 import { createRequire } from "module";
+import { existsSync, readdirSync, statSync } from "fs";
+import { resolve, extname } from "path";
 import { parseMarkdownFile } from "./parser.js";
 import { convert } from "./converters/index.js";
 import { loadConfig } from "./config.js";
@@ -9,6 +11,28 @@ import { startPreview } from "./preview.js";
 
 const require = createRequire(import.meta.url);
 const pkg = require("../package.json");
+const templateRoots = [
+  resolve(process.cwd(), "templates"),
+  new URL("../templates", import.meta.url).pathname,
+];
+
+function listTemplates(): string[] {
+  const names = new Set<string>();
+
+  for (const root of templateRoots) {
+    if (!existsSync(root) || !statSync(root).isDirectory()) {
+      continue;
+    }
+
+    for (const entry of readdirSync(root)) {
+      if (extname(entry) === ".html") {
+        names.add(entry.replace(/\.html$/, ""));
+      }
+    }
+  }
+
+  return [...names].sort();
+}
 
 const program = new Command();
 
@@ -119,6 +143,25 @@ program
     } catch (err: any) {
       log.error(err.message ?? String(err));
       process.exit(1);
+    }
+  });
+
+program
+  .command("templates")
+  .description("List available templates")
+  .action(() => {
+    const templates = listTemplates();
+
+    log.blank();
+    log.bold("--- Available Templates ---");
+
+    if (templates.length === 0) {
+      log.dim("  (none found)");
+      return;
+    }
+
+    for (const template of templates) {
+      console.log(`  • ${template}`);
     }
   });
 

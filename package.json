@@ -1,25 +1,39 @@
 {
   "name": "md-to-anything",
   "version": "0.1.0",
-  "description": "Convert Markdown to PDF, DOCX, or HTML using templates",
+  "description": "Convert Markdown to PDF, DOCX, or HTML using clean templates",
   "type": "module",
   "bin": {
     "md-to": "./dist/cli.js"
   },
   "scripts": {
     "dev": "tsx src/cli.ts",
-    "build": "tsc",
-    "start": "node dist/cli.js"
+    "build": "tsup src/cli.ts --format esm --out-dir dist --clean",
+    "start": "node dist/cli.js",
+    "prepublishOnly": "npm run build",
+    "test": "vitest run"
   },
+  "files": [
+    "dist",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
   "keywords": [
     "markdown",
     "pdf",
     "docx",
     "html",
+    "converter",
     "cli",
-    "converter"
+    "templates",
+    "pandoc",
+    "puppeteer"
   ],
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "chokidar": "^3.6.0",
     "commander": "^14.0.3",
@@ -40,7 +54,9 @@
     "@types/ws": "^8.18.1",
     "eslint": "^10.4.0",
     "prettier": "^3.8.3",
+    "tsup": "^8.5.1",
     "tsx": "^4.22.3",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
   }
 }
