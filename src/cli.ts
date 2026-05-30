@@ -38,13 +38,13 @@ const program = new Command();
 
 program
   .name("md-to")
-  .description("Convert Markdown files to PDF, DOCX, or HTML")
+  .description("Convert Markdown files to PDF, DOCX, HTML, or slides")
   .version(pkg.version);
 
 // ─── Single file convert ───────────────────────────────────────────────────
 program
   .argument("<file>", "Markdown file to convert")
-  .option("-f, --format <format>", "Output format: pdf, docx, html")
+  .option("-f, --format <format>", "Output format: pdf, docx, html, slides")
   .option("-t, --template <template>", "Template name")
   .option("-o, --output <path>", "Output file path")
   .option("-v, --verbose", "Show detailed logs")
@@ -91,7 +91,7 @@ program
 program
   .command("batch <pattern>")
   .description('Convert multiple files — e.g. batch "docs/*.md" --format pdf')
-  .option("-f, --format <format>", "Output format: pdf, docx, html")
+  .option("-f, --format <format>", "Output format: pdf, docx, html, slides")
   .option("-t, --template <template>", "Template name")
   .option("-d, --out-dir <dir>", "Output directory for all converted files")
   .option("-v, --verbose", "Show detailed logs")

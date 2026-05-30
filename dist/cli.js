@@ -4,7 +4,7 @@
 import { Command } from "commander";
 import { createRequire } from "module";
 import { existsSync as existsSync4, readdirSync, statSync as statSync2 } from "fs";
-import { resolve as resolve8, extname as extname5 } from "path";
+import { resolve as resolve9, extname as extname6 } from "path";
 
 // src/parser.ts
 import MarkdownIt from "markdown-it";
@@ -17,7 +17,7 @@ var FrontmatterSchema = z.object({
   author: z.string().optional(),
   date: z.union([z.string(), z.date()]).optional(),
   template: z.string().optional(),
-  format: z.enum(["pdf", "docx", "html"]).optional(),
+  format: z.enum(["pdf", "docx", "html", "slides"]).optional(),
   output: z.string().optional(),
   margin: z.string().optional()
 });
@@ -199,28 +199,67 @@ function resolveOutputPath3(doc, options, ext) {
   return resolve5(dirname3(doc.filePath), `${inputBase}.${ext}`);
 }
 
+// src/converters/slides.ts
+import MarkdownIt2 from "markdown-it";
+import { mkdirSync as mkdirSync4, writeFileSync as writeFileSync2 } from "fs";
+import { resolve as resolve6, dirname as dirname4, basename as basename4, extname as extname5 } from "path";
+var md2 = new MarkdownIt2({
+  html: true,
+  linkify: true,
+  typographer: true
+});
+function convertToSlides(doc, options) {
+  const slides = doc.content.split(/\n---\n/).map((slide) => `<section>${md2.render(slide)}</section>`).join("\n");
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${doc.frontmatter.title ?? "Slides"}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/theme/white.css">
+</head>
+<body>
+  <div class="reveal"><div class="slides">${slides}</div></div>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.js"></script>
+  <script>Reveal.initialize();</script>
+</body>
+</html>`;
+  const outputPath = resolveOutputPath4(doc, options, "html");
+  mkdirSync4(dirname4(outputPath), { recursive: true });
+  writeFileSync2(outputPath, html, "utf-8");
+  return outputPath;
+}
+function resolveOutputPath4(doc, options, ext) {
+  if (options.output) return resolve6(options.output);
+  const inputBase = basename4(doc.filePath, extname5(doc.filePath));
+  return resolve6(dirname4(doc.filePath), `${inputBase}.${ext}`);
+}
+
 // src/converters/index.ts
 async function convert(doc, options) {
   const format = options.format ?? doc.frontmatter.format ?? "html";
   switch (format) {
     case "html":
       return convertToHtml(doc, options);
+    case "slides":
+      return convertToSlides(doc, options);
     case "pdf":
       return await convertToPdf(doc, options);
     case "docx":
       return await convertToDocx(doc, options);
     default:
       throw new Error(
-        `Unknown format "${format}". Valid options: html, pdf, docx`
+        `Unknown format "${format}". Valid options: html, pdf, docx, slides`
       );
   }
 }
 
 // src/config.ts
 import { existsSync as existsSync3, readFileSync as readFileSync3 } from "fs";
-import { resolve as resolve6 } from "path";
+import { resolve as resolve7 } from "path";
 function loadConfig() {
-  const configPath = resolve6(process.cwd(), "md-to.config.json");
+  const configPath = resolve7(process.cwd(), "md-to.config.json");
   if (!existsSync3(configPath)) return {};
   try {
     const raw = readFileSync3(configPath, "utf-8");
@@ -319,7 +358,7 @@ function printBatchProgress(result, index, total) {
 import http from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import chokidar from "chokidar";
-import { resolve as resolve7 } from "path";
+import { resolve as resolve8 } from "path";
 var INJECTED_SCRIPT = `
 <script>
   const ws = new WebSocket('ws://localhost:__PORT__');
@@ -343,7 +382,7 @@ function renderDoc(filePath, templateName) {
   return html;
 }
 async function startPreview(filePath, templateName = "default", port = 3e3) {
-  const absolutePath = resolve7(filePath);
+  const absolutePath = resolve8(filePath);
   const wsPort = port + 1;
   let currentHtml = renderDoc(absolutePath, templateName);
   const server = http.createServer((req, res) => {
@@ -398,7 +437,7 @@ function openBrowser(url) {
 var require2 = createRequire(import.meta.url);
 var pkg = require2("../package.json");
 var templateRoots = [
-  resolve8(process.cwd(), "templates"),
+  resolve9(process.cwd(), "templates"),
   new URL("../templates", import.meta.url).pathname
 ];
 function listTemplates() {
@@ -408,7 +447,7 @@ function listTemplates() {
       continue;
     }
     for (const entry of readdirSync(root)) {
-      if (extname5(entry) === ".html") {
+      if (extname6(entry) === ".html") {
         names.add(entry.replace(/\.html$/, ""));
       }
     }
@@ -416,8 +455,8 @@ function listTemplates() {
   return [...names].sort();
 }
 var program = new Command();
-program.name("md-to").description("Convert Markdown files to PDF, DOCX, or HTML").version(pkg.version);
-program.argument("<file>", "Markdown file to convert").option("-f, --format <format>", "Output format: pdf, docx, html").option("-t, --template <template>", "Template name").option("-o, --output <path>", "Output file path").option("-v, --verbose", "Show detailed logs").option("-w, --watch", "Start live preview with hot reload").option("-p, --port <number>", "Port for live preview", "3000").action(async (file, options) => {
+program.name("md-to").description("Convert Markdown files to PDF, DOCX, HTML, or slides").version(pkg.version);
+program.argument("<file>", "Markdown file to convert").option("-f, --format <format>", "Output format: pdf, docx, html, slides").option("-t, --template <template>", "Template name").option("-o, --output <path>", "Output file path").option("-v, --verbose", "Show detailed logs").option("-w, --watch", "Start live preview with hot reload").option("-p, --port <number>", "Port for live preview", "3000").action(async (file, options) => {
   const config = loadConfig();
   const format = options.format ?? config.format ?? "html";
   const template = options.template ?? config.template ?? "default";
@@ -449,7 +488,7 @@ program.argument("<file>", "Markdown file to convert").option("-f, --format <for
     process.exit(1);
   }
 });
-program.command("batch <pattern>").description('Convert multiple files \u2014 e.g. batch "docs/*.md" --format pdf').option("-f, --format <format>", "Output format: pdf, docx, html").option("-t, --template <template>", "Template name").option("-d, --out-dir <dir>", "Output directory for all converted files").option("-v, --verbose", "Show detailed logs").action(async (pattern, options) => {
+program.command("batch <pattern>").description('Convert multiple files \u2014 e.g. batch "docs/*.md" --format pdf').option("-f, --format <format>", "Output format: pdf, docx, html, slides").option("-t, --template <template>", "Template name").option("-d, --out-dir <dir>", "Output directory for all converted files").option("-v, --verbose", "Show detailed logs").action(async (pattern, options) => {
   const config = loadConfig();
   const format = options.format ?? config.format ?? "html";
   const template = options.template ?? config.template ?? "default";

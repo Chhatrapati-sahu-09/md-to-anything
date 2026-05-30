@@ -3,7 +3,7 @@ export interface Frontmatter {
   author?: string;
   date?: string;
   template?: string;
-  format?: "pdf" | "docx" | "html";
+  format?: "pdf" | "docx" | "html" | "slides";
   output?: string;
   margin?: string;
   lang?: string;
@@ -17,7 +17,7 @@ export interface ParsedDocument {
 }
 
 export interface ConvertOptions {
-  format: "pdf" | "docx" | "html";
+  format: "pdf" | "docx" | "html" | "slides";
   template?: string;
   output?: string;
   verbose?: boolean;

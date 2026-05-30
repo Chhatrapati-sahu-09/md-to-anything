@@ -15,6 +15,7 @@ md-to-anything/
 │       ├── index.ts
 │       ├── html.ts
 │       ├── pdf.ts
+│       ├── slides.ts
 │       └── docx.ts
 ├── templates/
 │   ├── default.html

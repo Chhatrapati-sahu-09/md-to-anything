@@ -1,6 +1,7 @@
 import { convertToHtml } from "./html.js";
 import { convertToPdf } from "./pdf.js";
 import { convertToDocx } from "./docx.js";
+import { convertToSlides } from "./slides.js";
 import type { ParsedDocument, ConvertOptions } from "../types.js";
 
 export async function convert(
@@ -12,13 +13,15 @@ export async function convert(
   switch (format) {
     case "html":
       return convertToHtml(doc, options);
+    case "slides":
+      return convertToSlides(doc, options);
     case "pdf":
       return await convertToPdf(doc, options);
     case "docx":
       return await convertToDocx(doc, options);
     default:
       throw new Error(
-        `Unknown format "${format}". Valid options: html, pdf, docx`,
+        `Unknown format "${format}". Valid options: html, pdf, docx, slides`,
       );
   }
 }

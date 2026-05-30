@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "fs";
 import { resolve } from "path";
 
 interface Config {
-  format?: "pdf" | "docx" | "html";
+  format?: "pdf" | "docx" | "html" | "slides";
   template?: string;
   output?: string;
 }

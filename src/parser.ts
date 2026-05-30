@@ -10,7 +10,7 @@ const FrontmatterSchema = z.object({
   author: z.string().optional(),
   date: z.union([z.string(), z.date()]).optional(),
   template: z.string().optional(),
-  format: z.enum(["pdf", "docx", "html"]).optional(),
+  format: z.enum(["pdf", "docx", "html", "slides"]).optional(),
   output: z.string().optional(),
   margin: z.string().optional(),
 });

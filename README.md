@@ -17,6 +17,7 @@
 It supports:
 
 - Multiple export formats
+- Slide deck output
 - Custom templates
 - Frontmatter configuration
 - Live preview with hot reload
@@ -68,11 +69,13 @@ Convert Markdown files into:
 - PDF
 - DOCX
 - HTML
+- Slides
 
 ```bash
 md-to report.md --format pdf
 md-to report.md --format docx
 md-to report.md --format html
+md-to talk.md --format slides
 ```
 
 ---
@@ -81,12 +84,13 @@ md-to report.md --format html
 
 Built-in templates:
 
-| Template | Usage                 |
-| -------- | --------------------- |
-| default  | General documents     |
-| resume   | CV and Resume layouts |
-| invoice  | Invoice generation    |
-| report   | Formal reports        |
+| Template | Usage                   |
+| -------- | ----------------------- |
+| default  | General documents       |
+| resume   | CV and Resume layouts   |
+| invoice  | Invoice generation      |
+| report   | Formal reports          |
+| slides   | Reveal.js presentations |
 
 Example:
 
