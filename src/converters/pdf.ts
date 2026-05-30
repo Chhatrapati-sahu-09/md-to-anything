@@ -10,7 +10,10 @@ export async function convertToPdf(
 ): Promise<string> {
   const templateName =
     options.template ?? doc.frontmatter.template ?? "default";
-  const html = renderTemplate(doc, templateName);
+  const html = await renderTemplate(doc, templateName, {
+    noHighlight: options.noHighlight,
+    toc: options.toc,
+  });
   const outputPath = resolveOutputPath(doc, options, "pdf");
 
   mkdirSync(dirname(outputPath), { recursive: true });
@@ -29,10 +32,10 @@ export async function convertToPdf(
       path: outputPath,
       format: "A4",
       margin: {
-        top: doc.frontmatter.margin ?? "2cm",
-        bottom: doc.frontmatter.margin ?? "2cm",
-        left: doc.frontmatter.margin ?? "2cm",
-        right: doc.frontmatter.margin ?? "2cm",
+        top: options.margin ?? doc.frontmatter.margin ?? "2cm",
+        bottom: options.margin ?? doc.frontmatter.margin ?? "2cm",
+        left: options.margin ?? doc.frontmatter.margin ?? "2cm",
+        right: options.margin ?? doc.frontmatter.margin ?? "2cm",
       },
       printBackground: true,
     });

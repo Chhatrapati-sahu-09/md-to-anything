@@ -5,6 +5,9 @@ interface Config {
   format?: "pdf" | "docx" | "html" | "slides";
   template?: string;
   output?: string;
+  highlight?: boolean;
+  toc?: boolean;
+  margin?: string;
 }
 
 export function loadConfig(): Config {

@@ -13,6 +13,7 @@ const FrontmatterSchema = z.object({
   format: z.enum(["pdf", "docx", "html", "slides"]).optional(),
   output: z.string().optional(),
   margin: z.string().optional(),
+  toc: z.boolean().optional(),
 });
 
 const md = new MarkdownIt({

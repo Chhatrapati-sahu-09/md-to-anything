@@ -3,13 +3,16 @@ import { resolve, dirname, basename, extname } from "path";
 import { renderTemplate } from "../template.js";
 import type { ParsedDocument, ConvertOptions } from "../types.js";
 
-export function convertToHtml(
+export async function convertToHtml(
   doc: ParsedDocument,
   options: ConvertOptions,
-): string {
+): Promise<string> {
   const templateName =
     options.template ?? doc.frontmatter.template ?? "default";
-  const rendered = renderTemplate(doc, templateName);
+  const rendered = await renderTemplate(doc, templateName, {
+    noHighlight: options.noHighlight,
+    toc: options.toc,
+  });
 
   const outputPath = resolveOutputPath(doc, options, "html");
   mkdirSync(dirname(outputPath), { recursive: true });

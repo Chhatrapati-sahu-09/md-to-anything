@@ -1,7 +1,9 @@
 import nunjucks from "nunjucks";
 import { existsSync, readFileSync } from "fs";
-import { resolve, join } from "path";
-import type { ParsedDocument } from "./types.js";
+import { resolve } from "path";
+import { buildHighlighter, applyHighlighting } from "./highlight.js";
+import { generateTOC } from "./toc.js";
+import type { ParsedDocument, ConvertOptions } from "./types.js";
 
 function findTemplatePath(templateName: string): string {
   const candidates = [
@@ -22,16 +24,29 @@ function findTemplatePath(templateName: string): string {
 export function renderTemplate(
   doc: ParsedDocument,
   templateName = "default",
-): string {
+  options: Pick<ConvertOptions, "noHighlight" | "toc"> = {},
+): Promise<string> {
   const templatePath = findTemplatePath(templateName);
   const templateSrc = readFileSync(templatePath, "utf-8");
+  const { toc, html } =
+    options.toc || doc.frontmatter.toc
+      ? generateTOC(doc.html)
+      : { toc: "", html: doc.html };
 
   nunjucks.configure({ autoescape: true });
 
-  return nunjucks.renderString(templateSrc, {
+  const rendered = nunjucks.renderString(templateSrc, {
     title: doc.frontmatter.title ?? "",
     author: doc.frontmatter.author ?? "",
     date: doc.frontmatter.date ?? "",
-    content: doc.html,
+    content: `${toc}${html}`,
   });
+
+  if (options.noHighlight) {
+    return Promise.resolve(rendered);
+  }
+
+  return buildHighlighter().then((highlighter) =>
+    applyHighlighting(rendered, highlighter),
+  );
 }

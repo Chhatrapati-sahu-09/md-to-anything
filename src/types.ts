@@ -7,6 +7,7 @@ export interface Frontmatter {
   output?: string;
   margin?: string;
   lang?: string;
+  toc?: boolean;
 }
 
 export interface ParsedDocument {
@@ -22,6 +23,9 @@ export interface ConvertOptions {
   output?: string;
   verbose?: boolean;
   outputDir?: string;
+  margin?: string;
+  noHighlight?: boolean;
+  toc?: boolean;
 }
 
 export interface BatchResult {

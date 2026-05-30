@@ -1,6 +1,7 @@
 import MarkdownIt from "markdown-it";
 import { mkdirSync, writeFileSync } from "fs";
 import { resolve, dirname, basename, extname } from "path";
+import { buildHighlighter, applyHighlighting } from "../highlight.js";
 import type { ParsedDocument, ConvertOptions } from "../types.js";
 
 const md = new MarkdownIt({
@@ -9,10 +10,10 @@ const md = new MarkdownIt({
   typographer: true,
 });
 
-export function convertToSlides(
+export async function convertToSlides(
   doc: ParsedDocument,
   options: ConvertOptions,
-): string {
+): Promise<string> {
   const slides = doc.content
     .split(/\n---\n/)
     .map((slide) => `<section>${md.render(slide)}</section>`)
@@ -36,7 +37,12 @@ export function convertToSlides(
 
   const outputPath = resolveOutputPath(doc, options, "html");
   mkdirSync(dirname(outputPath), { recursive: true });
-  writeFileSync(outputPath, html, "utf-8");
+
+  const finalHtml = options.noHighlight
+    ? html
+    : applyHighlighting(html, await buildHighlighter());
+
+  writeFileSync(outputPath, finalHtml, "utf-8");
 
   return outputPath;
 }

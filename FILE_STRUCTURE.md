@@ -4,12 +4,14 @@
 md-to-anything/
 ├── src/
 │   ├── cli.ts
+│   ├── highlight.ts
 │   ├── parser.ts
 │   ├── template.ts
 │   ├── batch.ts
 │   ├── preview.ts
 │   ├── logger.ts
 │   ├── config.ts
+│   ├── toc.ts
 │   ├── types.ts
 │   └── converters/
 │       ├── index.ts

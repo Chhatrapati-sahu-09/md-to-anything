@@ -26,9 +26,12 @@ function injectReloadScript(html: string, port: number): string {
   return html.replace("</body>", `${script}</body>`);
 }
 
-function renderDoc(filePath: string, templateName: string): string {
+async function renderDoc(
+  filePath: string,
+  templateName: string,
+): Promise<string> {
   const doc = parseMarkdownFile(filePath);
-  const html = renderTemplate(doc, templateName);
+  const html = await renderTemplate(doc, templateName);
   return html;
 }
 
@@ -40,7 +43,7 @@ export async function startPreview(
   const absolutePath = resolve(filePath);
   const wsPort = port + 1;
 
-  let currentHtml = renderDoc(absolutePath, templateName);
+  let currentHtml = await renderDoc(absolutePath, templateName);
 
   const server = http.createServer((req, res) => {
     res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
@@ -62,10 +65,10 @@ export async function startPreview(
     awaitWriteFinish: { stabilityThreshold: 100, pollInterval: 50 },
   });
 
-  watcher.on("change", (changedPath) => {
+  watcher.on("change", async (changedPath) => {
     try {
       log.info(`File changed: ${changedPath.split("/").pop()}`);
-      currentHtml = renderDoc(absolutePath, templateName);
+      currentHtml = await renderDoc(absolutePath, templateName);
       broadcast("reload");
       log.success("Preview updated");
     } catch (err) {

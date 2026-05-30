@@ -18,6 +18,8 @@ It supports:
 
 - Multiple export formats
 - Slide deck output
+- Syntax highlighting via Shiki
+- Auto table of contents
 - Custom templates
 - Frontmatter configuration
 - Live preview with hot reload
@@ -76,6 +78,12 @@ md-to report.md --format pdf
 md-to report.md --format docx
 md-to report.md --format html
 md-to talk.md --format slides
+```
+
+Disable syntax highlighting when needed:
+
+```bash
+md-to report.md --format html --no-highlight
 ```
 
 ---
@@ -153,6 +161,28 @@ CLI arguments always override frontmatter values.
 
 ---
 
+## CLI Utilities
+
+Create a starter config in the current directory:
+
+```bash
+md-to init
+```
+
+Compare two rendered markdown files side by side:
+
+```bash
+md-to diff doc-a.md doc-b.md
+```
+
+Get document stats:
+
+```bash
+md-to stats report.md
+```
+
+---
+
 # Installation
 
 ## Global Installation
@@ -223,15 +253,17 @@ md-to info report.md
 
 # Frontmatter Configuration
 
-| Field    | Type          | Description    |
-| -------- | ------------- | -------------- |
-| title    | string        | Document title |
-| author   | string        | Author name    |
-| date     | string        | Header date    |
-| template | string        | Template name  |
-| format   | pdf/docx/html | Export format  |
-| output   | string        | Output path    |
-| margin   | string        | PDF margin     |
+| Field     | Type          | Description                |
+| --------- | ------------- | -------------------------- |
+| title     | string        | Document title             |
+| author    | string        | Author name                |
+| date      | string        | Header date                |
+| template  | string        | Template name              |
+| format    | pdf/docx/html | Export format              |
+| output    | string        | Output path                |
+| margin    | string        | PDF margin                 |
+| highlight | boolean       | Enable syntax highlighting |
+| toc       | boolean       | Show a table of contents   |
 
 ---
 

@@ -12,9 +12,9 @@ export async function convert(
 
   switch (format) {
     case "html":
-      return convertToHtml(doc, options);
+      return await convertToHtml(doc, options);
     case "slides":
-      return convertToSlides(doc, options);
+      return await convertToSlides(doc, options);
     case "pdf":
       return await convertToPdf(doc, options);
     case "docx":
