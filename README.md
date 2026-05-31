@@ -12,22 +12,20 @@
 
 # Overview
 
-`md-to-anything` is a modern CLI utility for converting Markdown documents into multiple professional formats such as PDF, DOCX, and HTML.
+`md-to-anything` is a modern CLI utility that converts Markdown documents into professional PDF, DOCX, HTML, and presentation slides with zero configuration.
 
-It supports:
+## Key Features
 
-- Multiple export formats
-- Slide deck output
-- Syntax highlighting via Shiki
-- Auto table of contents
-- Custom templates
-- Frontmatter configuration
-- Live preview with hot reload
-- Batch conversion
-- Clean CLI workflow
+- **Multiple Export Formats** — PDF, DOCX, HTML, and Reveal.js slides
+- **Syntax Highlighting** — Beautiful code blocks via Shiki (16+ languages supported)
+- **Auto Table of Contents** — Generate TOC from h2 and h3 headings automatically
+- **Custom Templates** — Built-in templates for reports, resumes, invoices, and slides
+- **Frontmatter Configuration** — YAML-based document settings
+- **Live Preview** — Watch mode with hot reload in the browser
+- **Batch Conversion** — Convert multiple files in parallel
+- **Professional Output** — Clean, publication-ready documents
 
-See the full project layout in [FILE_STRUCTURE.md](FILE_STRUCTURE.md).
-See the development plan in [WORKING_PLAN.md](WORKING_PLAN.md).
+📖 **Documentation:** [FILE_STRUCTURE.md](FILE_STRUCTURE.md) | [WORKING_PLAN.md](WORKING_PLAN.md)
 
 ---
 
@@ -62,87 +60,70 @@ See the development plan in [WORKING_PLAN.md](WORKING_PLAN.md).
 
 ---
 
-# Features
+## Built-in Templates
 
-## Document Conversion
-
-Convert Markdown files into:
-
-- PDF
-- DOCX
-- HTML
-- Slides
-
-```bash
-md-to report.md --format pdf
-md-to report.md --format docx
-md-to report.md --format html
-md-to talk.md --format slides
-```
-
-Disable syntax highlighting when needed:
-
-```bash
-md-to report.md --format html --no-highlight
-```
-
----
+| Template | Best For                |
+| -------- | ----------------------- |
+| default  | General documents       |
+| resume   | CV and resume layouts   |
+| invoice  | Invoice generation      |
+| report   | Formal reports & papers |
+| slides   | Reveal.js presentations |
 
 ## Custom Templates
 
-Built-in templates:
+Create custom HTML templates in your `templates/` directory:
 
-| Template | Usage                   |
-| -------- | ----------------------- |
-| default  | General documents       |
-| resume   | CV and Resume layouts   |
-| invoice  | Invoice generation      |
-| report   | Formal reports          |
-| slides   | Reveal.js presentations |
+```html
+<html>
+  <head>
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    {{ content | safe }}
+  </body>
+</html>
+```
 
-Example:
+Then use it:
 
 ```bash
-md-to cv.md --template resume --format pdf
+md-to report.md --template my-template
 ```
 
 ---
 
-## Live Preview Mode
+## Syntax Highlighting & TOC
 
-Watch files and auto-refresh on changes.
+Enable syntax highlighting and auto table of contents:
 
-```bash
-md-to report.md --watch
-```
-
-Custom port:
-
-```bash
-md-to report.md --watch --port 4000
-```
-
+````markdown
+---
+title: My Report
+highlight: true
+toc: true
 ---
 
-## Batch Conversion
+# Main Title
 
-Convert multiple Markdown files together.
+## Section One
+
+```typescript
+const value = "highlighted code";
+```
+````
+
+````
+
+Or use CLI flags:
 
 ```bash
-md-to batch "docs/*.md" --format pdf
-```
+md-to report.md --format html --toc --no-highlight
+````
 
-Recursive conversion:
+## Frontmatter Configuration
 
-```bash
-md-to batch "posts/**/*.md" --format html --out-dir output/
-```
-
----
-
-## Frontmatter Support
-
-Supports YAML frontmatter configuration directly inside Markdown files.
+Configure documents via YAML frontmatter:
 
 ```markdown
 ---
@@ -152,101 +133,147 @@ date: May 2026
 template: report
 format: pdf
 margin: 2.5cm
+highlight: true
+toc: false
 ---
 
-# Content
+# Your Content
 ```
 
-CLI arguments always override frontmatter values.
+✓ **Note:** CLI arguments always override frontmatter values.
 
 ---
 
-## CLI Utilities
+## Utility Commands
 
-Create a starter config in the current directory:
+**Initialize project config:**
 
 ```bash
 md-to init
 ```
 
-Compare two rendered markdown files side by side:
+Creates a `md-to.config.json` with sensible defaults.
+
+**Compare two documents:**
 
 ```bash
 md-to diff doc-a.md doc-b.md
 ```
 
-Get document stats:
+Generates a side-by-side HTML diff at `diff.html`.
+
+**Get document statistics:**
 
 ```bash
 md-to stats report.md
 ```
 
+Shows word count, reading time, heading structure, code blocks, links, and images.
+
 ---
 
-# Installation
+# Quick Start
 
-## Global Installation
+## Installation
+
+### Global NPM
 
 ```bash
 npm install -g md-to-anything
+md-to report.md --format pdf
 ```
 
----
-
-## Using NPX
+### Using NPX (No Install)
 
 ```bash
 npx md-to-anything report.md --format pdf
 ```
 
----
+## System Requirements
 
-# Requirements
+| Dependency         | Version | Purpose                    |
+| ------------------ | ------- | -------------------------- |
+| Node.js            | 18+     | Runtime                    |
+| Pandoc             | Any     | DOCX generation (optional) |
+| Puppeteer Chromium | Bundled | PDF rendering              |
 
-| Dependency         | Purpose         |
-| ------------------ | --------------- |
-| Node.js 18+        | Runtime         |
-| Pandoc             | DOCX generation |
-| Puppeteer Chromium | PDF rendering   |
+### Install Pandoc
 
-Install Pandoc:
+**macOS:**
 
 ```bash
-https://pandoc.org/installing.html
+brew install pandoc
 ```
 
----
-
-# Usage
-
-## Convert Single File
+**Ubuntu/Debian:**
 
 ```bash
+sudo apt-get install pandoc
+```
+
+**Windows:**
+Download from [pandoc.org](https://pandoc.org/installing.html)
+
+---
+
+# Usage Guide
+
+## Single File Conversion
+
+```bash
+# Convert to PDF
 md-to report.md --format pdf
+
+# Convert to HTML with custom output
+md-to report.md --format html --output ~/Desktop/report.html
+
+# Convert with syntax highlighting and TOC
+md-to report.md --format pdf --toc
+
+# Convert without highlighting
+md-to report.md --format html --no-highlight
 ```
 
----
-
-## Specify Output Path
+## Templates & Formats
 
 ```bash
-md-to report.md --format pdf --output ~/Desktop/report.pdf
-```
-
----
-
-## List Templates
-
-```bash
+# List all available templates
 md-to templates
+
+# Use a specific template
+md-to cv.md --template resume --format pdf
+
+# Available templates: default, resume, invoice, report, slides
 ```
 
----
-
-## Inspect File Metadata
+## Batch Operations
 
 ```bash
+# Convert all markdown files in a directory
+md-to batch "docs/*.md" --format pdf --out-dir output/
+
+# Recursive conversion
+md-to batch "posts/**/*.md" --format html
+```
+
+## Live Preview
+
+```bash
+# Watch file and auto-refresh in browser
+md-to report.md --watch
+
+# Use custom port
+md-to report.md --watch --port 4000
+```
+
+## File Information
+
+```bash
+# Show document metadata and stats
 md-to info report.md
+
+# Get detailed statistics
+md-to stats report.md
 ```
 
 ---
@@ -298,94 +325,121 @@ md-to report.md --template my-template
 
 # Configuration File
 
-Create:
+Initialize project config with sensible defaults:
 
-```json
-md-to.config.json
+```bash
+md-to init
 ```
 
-Example:
+This creates `md-to.config.json`:
 
 ```json
 {
   "format": "pdf",
-  "template": "default"
+  "template": "default",
+  "highlight": true,
+  "toc": false,
+  "margin": "2cm"
 }
 ```
 
----
+**Priority:** CLI args > Frontmatter > Config file > Defaults
 
-# CLI Options
+## Frontmatter Fields Reference
 
-| Option         | Description   |
-| -------------- | ------------- |
-| -f, --format   | Output format |
-| -t, --template | Template name |
-| -o, --output   | Output path   |
-| -w, --watch    | Live preview  |
-| -p, --port     | Preview port  |
-| -v, --verbose  | Detailed logs |
-| -V, --version  | Version       |
-| -h, --help     | Help menu     |
-
----
-
-# Commands
-
-| Command   | Description            |
-| --------- | ---------------------- |
-| batch     | Convert multiple files |
-| info      | Show metadata          |
-| templates | List templates         |
+| Field       | Type    | Default   | Description                             |
+| ----------- | ------- | --------- | --------------------------------------- |
+| `title`     | string  | —         | Document title                          |
+| `author`    | string  | —         | Author name                             |
+| `date`      | string  | —         | Publication date                        |
+| `template`  | string  | `default` | Template name                           |
+| `format`    | string  | `html`    | Output format (pdf, docx, html, slides) |
+| `margin`    | string  | `2cm`     | PDF margin                              |
+| `highlight` | boolean | `true`    | Enable syntax highlighting              |
+| `toc`       | boolean | `false`   | Generate table of contents              |
 
 ---
 
-# Tech Stack
+# Complete CLI Reference
 
-<p align="left">
+## Global Options
 
-<img src="https://skillicons.dev/icons?i=nodejs,npm,html,css,js" />
+| Option           | Short | Description                             |
+| ---------------- | ----- | --------------------------------------- |
+| `--format`       | `-f`  | Output format: pdf, docx, html, slides  |
+| `--template`     | `-t`  | Template name (default, resume, report) |
+| `--output`       | `-o`  | Output file path                        |
+| `--watch`        | `-w`  | Live preview mode with hot reload       |
+| `--port`         | `-p`  | Port for live preview (default: 3000)   |
+| `--toc`          |       | Insert table of contents                |
+| `--no-highlight` |       | Disable syntax highlighting             |
+| `--verbose`      | `-v`  | Show detailed logs                      |
+| `--version`      | `-V`  | Show version                            |
+| `--help`         | `-h`  | Show help menu                          |
 
-</p>
+## Commands
+
+| Command           | Description                                |
+| ----------------- | ------------------------------------------ |
+| `batch <pattern>` | Convert multiple files matching pattern    |
+| `init`            | Create md-to.config.json in current dir    |
+| `diff <f1> <f2>`  | Generate side-by-side HTML diff            |
+| `stats <file>`    | Show document statistics (words, TOC, etc) |
+| `info <file>`     | Display file metadata and properties       |
+| `templates`       | List all available templates               |
 
 ---
 
-# Example Workflow
+# Development
 
-```text
-Write Markdown
-       │
-       ▼
-Run md-to-anything CLI
-       │
-       ▼
-Choose Template + Format
-       │
-       ▼
-Generate Output
-       │
-       ├── PDF
-       ├── DOCX
-       └── HTML
-```
-
----
-
-# Contributing
-
-Contributions are welcome.
-
-Steps:
+## Setup
 
 ```bash
-git clone <repo>
+git clone https://github.com/yourusername/md-to-anything.git
 cd md-to-anything
 npm install
-npm run dev
 ```
+
+## Commands
+
+```bash
+# Development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Run tests
+npm test
+```
+
+## Project Structure
+
+```
+src/
+  cli.ts          # Command-line interface
+  parser.ts       # Markdown parser
+  template.ts     # Template rendering
+  highlight.ts    # Syntax highlighting
+  toc.ts          # Table of contents
+  converters/     # Format-specific converters
+templates/        # Built-in templates
+examples/         # Example markdown files
+tests/            # Test suite
+```
+
+## Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ---
 
 # License
 
-MIT License
+MIT License — Feel free to use in personal and commercial projects.
