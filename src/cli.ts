@@ -1,3 +1,22 @@
+/**
+ * CLI Module - Command Line Interface for md-to conversion tool
+ *
+ * This module provides the main command-line interface using Commander.js.
+ * It handles:
+ * - Single file conversion (to PDF, DOCX, HTML, or Slides)
+ * - Batch file conversion with glob patterns
+ * - Live preview mode with hot reload
+ * - Utility commands: init, diff, stats
+ * - Option parsing and validation
+ *
+ * Key features:
+ * - Template selection and validation
+ * - Output path resolution
+ * - Configuration file loading
+ * - Progress tracking for batch operations
+ * - Error handling and reporting
+ */
+
 import { Command } from "commander";
 import { createRequire } from "module";
 import { existsSync, readdirSync, statSync } from "fs";
