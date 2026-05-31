@@ -1,3 +1,35 @@
+/**
+ * Types Module - TypeScript Type Definitions for md-to
+ *
+ * This module defines all core type interfaces used throughout the application:
+ *
+ * Frontmatter:
+ * - YAML metadata at the top of markdown files
+ * - Optional fields: title, author, date, template, format, output, margin, lang, toc
+ * - Extracted from document header before content
+ *
+ * ParsedDocument:
+ * - Result of parsing a markdown file
+ * - Contains: frontmatter, raw content, rendered HTML, and file path
+ * - Passed through entire conversion pipeline
+ *
+ * ConvertOptions:
+ * - CLI/API options for conversion
+ * - Controls: output format, template, directory, margins, highlighting, TOC
+ * - Merged with frontmatter and config for final settings
+ *
+ * BatchResult:
+ * - Outcome of a single batch operation
+ * - Tracks: file path, output location, success status, errors, duration
+ * - Collected into array for batch summary reporting
+ *
+ * Supported formats:
+ * - pdf: Portable Document Format (via Puppeteer)
+ * - docx: Microsoft Word Document (via Pandoc)
+ * - html: HyperText Markup Language
+ * - slides: HTML presentation (via Reveal.js)
+ */
+
 export interface Frontmatter {
   title?: string;
   author?: string;
