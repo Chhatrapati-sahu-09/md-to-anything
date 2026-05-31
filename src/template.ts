@@ -1,3 +1,33 @@
+/**
+ * Template Module - HTML Template Rendering and Synthesis
+ *
+ * This module orchestrates the complete rendering pipeline:
+ * - Template file discovery and loading
+ * - Nunjucks template rendering with document context
+ * - Table of contents generation (optional)
+ * - Syntax highlighting via Shiki (optional)
+ *
+ * Template search order:
+ * 1. <cwd>/templates/{name}.html - User project templates
+ * 2. <cwd>/templates/{name} - Directory-based templates
+ * 3. Built-in templates directory - Fallback to package templates
+ *
+ * Rendering context provided to Nunjucks:
+ * - title: From frontmatter.title
+ * - author: From frontmatter.author
+ * - date: From frontmatter.date
+ * - content: HTML content with optional TOC prepended
+ *
+ * Features:
+ * - Automatic table of contents generation from h2/h3 headings
+ * - Safe HTML auto-escaping by default
+ * - Async highlighting pipeline with error graceful degradation
+ * - Fallback to unformatted code if highlighting fails
+ *
+ * Pipeline flow:
+ * Find template → Load → Render with Nunjucks → Apply highlighting → Return HTML
+ */
+
 import nunjucks from "nunjucks";
 import { existsSync, readFileSync } from "fs";
 import { resolve } from "path";
