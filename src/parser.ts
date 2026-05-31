@@ -1,3 +1,28 @@
+/**
+ * Parser Module - Markdown File Parsing and YAML Frontmatter Extraction
+ *
+ * This module is responsible for:
+ * - Reading and parsing markdown files
+ * - Extracting and validating YAML frontmatter using Zod schemas
+ * - Converting markdown to HTML using markdown-it
+ * - Handling errors for missing files, invalid formats, and malformed frontmatter
+ *
+ * Frontmatter fields supported:
+ * - title: Document title
+ * - author: Document author
+ * - date: Publication date (string or Date object)
+ * - template: Template name for rendering
+ * - format: Output format (pdf, docx, html, slides)
+ * - output: Custom output path
+ * - margin: Print margin (CSS units)
+ * - toc: Generate table of contents
+ *
+ * The markdown-it parser is configured with:
+ * - HTML passthrough enabled (html: true)
+ * - Link detection enabled (linkify: true)
+ * - Typography rules enabled (typographer: true)
+ */
+
 import MarkdownIt from "markdown-it";
 import matter from "gray-matter";
 import { readFileSync, existsSync, statSync } from "fs";
